@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Deployment Script for ChatBot SAAS Frontend
+// Deployment Script for ConversaAI Frontend
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');

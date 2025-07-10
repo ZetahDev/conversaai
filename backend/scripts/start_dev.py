@@ -99,7 +99,7 @@ def start_server():
 
 async def main():
     """Función principal"""
-    print("🎯 ChatBot SAAS - Servidor de Desarrollo")
+    print("🎯 ConversaAI - Servidor de Desarrollo")
     print("=" * 50)
     
     # Verificar dependencias

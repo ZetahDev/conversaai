@@ -1,4 +1,4 @@
-// Tipos para la API del ChatBot SAAS
+// Tipos para la API del ConversaAI
 
 export interface User {
   id: string;
@@ -18,7 +18,15 @@ export interface Company {
   slug: string;
   email: string;
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
-  company_type: 'FOOD' | 'BARBERSHOP' | 'ECOMMERCE' | 'RETAIL' | 'SERVICES' | 'HEALTH' | 'EDUCATION' | 'OTHER';
+  company_type:
+    | 'FOOD'
+    | 'BARBERSHOP'
+    | 'ECOMMERCE'
+    | 'RETAIL'
+    | 'SERVICES'
+    | 'HEALTH'
+    | 'EDUCATION'
+    | 'OTHER';
   created_at: string;
   updated_at: string;
 }

@@ -49,7 +49,7 @@ async def create_test_data():
                 slug="techcorp-demo",
                 email="admin@techcorp.com",
                 website="https://techcorp-demo.com",
-                description="Empresa de demostración para ChatBot SAAS",
+                description="Empresa de demostración para ConversaAI",
                 company_type="other",
                 status="active"
             )

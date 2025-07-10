@@ -234,7 +234,7 @@ def generate_report(results: Dict[str, Dict[str, bool]]):
 
 def main():
     """Función principal"""
-    print("🔍 Verificador de Dependencias - ChatBot SAAS Backend")
+    print("🔍 Verificador de Dependencias - ConversaAI Backend")
     print("="*60)
     
     results = {}

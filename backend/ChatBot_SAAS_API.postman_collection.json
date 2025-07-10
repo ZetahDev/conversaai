@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "chatbot-saas-api",
-    "name": "ChatBot SAAS API",
-    "description": "Colección completa de endpoints para el sistema ChatBot SAAS",
+    "name": "ConversaAI API",
+    "description": "Colección completa de endpoints para el sistema ConversaAI",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {

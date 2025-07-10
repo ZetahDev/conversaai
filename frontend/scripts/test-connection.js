@@ -132,7 +132,7 @@ async function checkBackendStatus() {
 }
 
 async function main() {
-  console.log('🎯 ChatBot SAAS - Test de Conexión Frontend-Backend');
+  console.log('🎯 ConversaAI - Test de Conexión Frontend-Backend');
   console.log('=' * 60);
 
   const backendRunning = await checkBackendStatus();

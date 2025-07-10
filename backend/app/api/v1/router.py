@@ -38,7 +38,7 @@ api_router.include_router(integrations_router, prefix="/integrations", tags=["in
 async def api_root():
     """Endpoint raíz de la API"""
     return {
-        "message": "ChatBot SAAS API v1",
+        "message": "ConversaAI API v1",
         "version": "1.0.0",
         "endpoints": {
             "auth": "/api/v1/auth",

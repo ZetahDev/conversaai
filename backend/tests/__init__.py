@@ -1,3 +1,3 @@
 """
-Tests para el sistema de chatbot SAAS
+Tests para el sistema de ConversaAI
 """

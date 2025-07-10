@@ -93,7 +93,7 @@ class WebWidgetIntegration:
         widget_config = {**default_config, **(config or {})}
         
         widget_code = f"""
-<!-- ChatBot SAAS Widget -->
+<!-- ConversaAI Widget -->
 <div id="chatbot-widget-{chatbot_id}"></div>
 <script>
 (function() {{
@@ -117,7 +117,7 @@ class WebWidgetIntegration:
     document.head.appendChild(script);
 }})();
 </script>
-<!-- Fin ChatBot SAAS Widget -->
+<!-- Fin ConversaAI Widget -->
         """.strip()
         
         return widget_code
@@ -170,7 +170,7 @@ class WebWidgetIntegration:
         widget_config = {**default_config, **(config or {})}
         
         popup_code = f"""
-<!-- ChatBot SAAS Popup Widget -->
+<!-- ConversaAI Popup Widget -->
 <div id="chatbot-popup-{chatbot_id}">
     <button 
         id="chatbot-toggle-{chatbot_id}"
@@ -235,7 +235,7 @@ class WebWidgetIntegration:
     }});
 }})();
 </script>
-<!-- Fin ChatBot SAAS Popup Widget -->
+<!-- Fin ConversaAI Popup Widget -->
         """.strip()
         
         return popup_code

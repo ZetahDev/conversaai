@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script de deployment para ChatBot SAAS
+# Script de deployment para ConversaAI
 # Uso: ./scripts/deploy.sh [environment]
 
 set -e  # Exit on any error

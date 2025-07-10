@@ -1,4 +1,4 @@
-# Makefile para ChatBot SAAS
+# Makefile para ConversaAI
 
 .PHONY: help install dev build test clean docker-build docker-up docker-down migrate seed lint format
 
@@ -19,7 +19,7 @@ BLUE = \033[0;34m
 NC = \033[0m # No Color
 
 help: ## Mostrar ayuda
-	@echo "$(BLUE)ChatBot SAAS - Comandos disponibles:$(NC)"
+	@echo "$(BLUE)ConversaAI - Comandos disponibles:$(NC)"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%-20s$(NC) %s\n", $$1, $$2}'
 
@@ -228,7 +228,7 @@ deploy-production: ## Deploy a producción
 
 # Información
 info: ## Mostrar información del proyecto
-	@echo "$(BLUE)ChatBot SAAS - Información del proyecto$(NC)"
+	@echo "$(BLUE)ConversaAI - Información del proyecto$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Estructura:$(NC)"
 	@echo "  Backend:  FastAPI + PostgreSQL + Redis"

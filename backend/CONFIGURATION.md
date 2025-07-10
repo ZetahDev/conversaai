@@ -1,4 +1,4 @@
-# 🔧 Configuración del Backend - ChatBot SAAS
+# 🔧 Configuración del Backend - ConversaAI
 
 Esta guía explica cómo configurar el backend para diferentes environments y funcionalidades.
 
@@ -14,6 +14,7 @@ Esta guía explica cómo configurar el backend para diferentes environments y fu
 ## 🌍 Environments Disponibles
 
 ### Development
+
 - **Archivo**: `.env.development`
 - **Propósito**: Desarrollo local
 - **Características**:
@@ -24,6 +25,7 @@ Esta guía explica cómo configurar el backend para diferentes environments y fu
   - Logs detallados
 
 ### Staging
+
 - **Archivo**: `.env.staging`
 - **Propósito**: Testing pre-producción
 - **Características**:
@@ -33,6 +35,7 @@ Esta guía explica cómo configurar el backend para diferentes environments y fu
   - Monitoreo habilitado
 
 ### Production
+
 - **Archivo**: `.env.production`
 - **Propósito**: Producción
 - **Características**:
@@ -45,6 +48,7 @@ Esta guía explica cómo configurar el backend para diferentes environments y fu
 ## ⚙️ Variables de Configuración
 
 ### 🔐 Seguridad
+
 ```env
 SECRET_KEY="tu-clave-secreta-muy-segura-32-caracteres-minimo"
 ALGORITHM="HS256"
@@ -53,6 +57,7 @@ REFRESH_TOKEN_EXPIRE_DAYS=7
 ```
 
 ### 🗄️ Base de Datos
+
 ```env
 # SQLite (Development)
 DATABASE_URL="sqlite:///./chatbot.db"
@@ -64,6 +69,7 @@ DATABASE_URL_ASYNC="postgresql+asyncpg://user:pass@host:5432/dbname"
 ```
 
 ### 🔴 Redis
+
 ```env
 REDIS_URL="redis://localhost:6379/0"
 REDIS_CACHE_TTL=3600
@@ -71,6 +77,7 @@ REDIS_ENABLED=true
 ```
 
 ### 🤖 APIs de IA
+
 ```env
 OPENAI_API_KEY="sk-..."
 OPENAI_ORG_ID="org-..."
@@ -78,6 +85,7 @@ GEMINI_API_KEY="..."
 ```
 
 ### 💳 Stripe (Pagos)
+
 ```env
 # Test
 STRIPE_SECRET_KEY="sk_test_..."
@@ -89,6 +97,7 @@ STRIPE_PUBLISHABLE_KEY="pk_live_..."
 ```
 
 ### 📧 Email
+
 ```env
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT=587
@@ -100,6 +109,7 @@ EMAIL_ENABLED=true
 ```
 
 ### 📱 Integraciones
+
 ```env
 # WhatsApp
 WHATSAPP_TOKEN="tu-token"
@@ -120,6 +130,7 @@ FACEBOOK_ENABLED=true
 ## 🛠️ Scripts de Gestión
 
 ### Cambiar Environment
+
 ```bash
 # Cambiar a development
 python scripts/set_environment.py set development
@@ -138,12 +149,14 @@ python scripts/set_environment.py validate
 ```
 
 ### Verificar Dependencias
+
 ```bash
 # Verificar todas las dependencias
 python scripts/check_dependencies.py
 ```
 
 ### Inicializar Base de Datos
+
 ```bash
 # Inicialización completa
 python scripts/init_db.py
@@ -160,16 +173,19 @@ python scripts/init_db.py --reset
 ### Development Setup
 
 1. **Copiar configuración**:
+
    ```bash
    python scripts/set_environment.py set development
    ```
 
 2. **Verificar dependencias**:
+
    ```bash
    python scripts/check_dependencies.py
    ```
 
 3. **Inicializar base de datos**:
+
    ```bash
    python scripts/minimal_init.py
    ```
@@ -182,6 +198,7 @@ python scripts/init_db.py --reset
 ### Staging Setup
 
 1. **Configurar PostgreSQL**:
+
    ```sql
    CREATE DATABASE chatbot_staging;
    CREATE USER chatbot_user WITH PASSWORD 'secure_password';
@@ -189,6 +206,7 @@ python scripts/init_db.py --reset
    ```
 
 2. **Configurar Redis**:
+
    ```bash
    # Instalar Redis
    sudo apt install redis-server
@@ -197,11 +215,13 @@ python scripts/init_db.py --reset
    ```
 
 3. **Cambiar environment**:
+
    ```bash
    python scripts/set_environment.py set staging
    ```
 
 4. **Configurar variables específicas** en `.env.staging`:
+
    - Database URLs
    - API keys de test
    - SMTP settings
@@ -214,17 +234,20 @@ python scripts/init_db.py --reset
 ### Production Setup
 
 1. **Configurar infraestructura**:
+
    - PostgreSQL con backup automático
    - Redis con persistencia
    - Load balancer
    - SSL/TLS certificates
 
 2. **Configurar variables de producción**:
+
    ```bash
    python scripts/set_environment.py set production
    ```
 
 3. **Configurar todas las API keys**:
+
    - OpenAI production keys
    - Stripe live keys
    - WhatsApp Business API
@@ -238,12 +261,14 @@ python scripts/init_db.py --reset
 ## 🚨 Troubleshooting
 
 ### Error: "SECRET_KEY too short"
+
 ```bash
 # Generar nueva clave segura
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
 ### Error: "Database connection failed"
+
 ```bash
 # Verificar que la base de datos esté ejecutándose
 python scripts/check_dependencies.py
@@ -256,6 +281,7 @@ ls -la *.db
 ```
 
 ### Error: "Redis connection failed"
+
 ```bash
 # Verificar Redis
 redis-cli ping
@@ -267,6 +293,7 @@ REDIS_ENABLED=false
 ```
 
 ### Error: "Import errors"
+
 ```bash
 # Instalar dependencias faltantes
 pip install -r requirements.txt
@@ -276,6 +303,7 @@ python scripts/check_dependencies.py
 ```
 
 ### Error: "Permission denied"
+
 ```bash
 # Verificar permisos del directorio
 chmod 755 .
@@ -289,12 +317,14 @@ chmod 755 uploads
 ## 📝 Checklist de Configuración
 
 ### Development ✅
+
 - [ ] `.env.development` configurado
 - [ ] SQLite funcionando
 - [ ] Credenciales de prueba creadas
 - [ ] Servidor iniciando correctamente
 
 ### Staging ✅
+
 - [ ] PostgreSQL configurado
 - [ ] Redis funcionando
 - [ ] API keys de test configuradas
@@ -302,6 +332,7 @@ chmod 755 uploads
 - [ ] Migraciones ejecutadas
 
 ### Production ✅
+
 - [ ] Infraestructura configurada
 - [ ] SSL/TLS habilitado
 - [ ] API keys de producción configuradas

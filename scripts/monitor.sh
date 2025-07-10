@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script de monitoreo para ChatBot SAAS
+# Script de monitoreo para ConversaAI
 # Uso: ./scripts/monitor.sh [check|status|logs|restart]
 
 set -e

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script para inicializar el entorno de desarrollo completo
-echo "🎯 ChatBot SAAS - Inicialización de Desarrollo"
+echo "🎯 ConversaAI - Inicialización de Desarrollo"
 echo "=============================================="
 
 # Función para verificar si un comando existe

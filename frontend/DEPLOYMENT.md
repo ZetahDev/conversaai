@@ -1,15 +1,17 @@
-# 🚀 Deployment Guide - ChatBot SAAS Frontend
+# 🚀 Deployment Guide - ConversaAI Frontend
 
-Esta guía te ayudará a deployar el frontend de ChatBot SAAS de manera segura y eficiente.
+Esta guía te ayudará a deployar el frontend de ConversaAI de manera segura y eficiente.
 
 ## 📋 Prerrequisitos
 
 ### Desarrollo
-- Node.js 18+ 
+
+- Node.js 18+
 - npm 9+
 - Git
 
 ### Producción
+
 - Servidor web (Nginx, Apache, o CDN)
 - Certificado SSL/TLS
 - Dominio configurado
@@ -52,16 +54,19 @@ PUBLIC_SENTRY_DSN=https://tu-sentry-dsn@sentry.io/proyecto
 ## 🏗️ Proceso de Build
 
 ### Desarrollo
+
 ```bash
 npm run deploy:dev
 ```
 
 ### Staging
+
 ```bash
 npm run deploy:staging
 ```
 
 ### Producción
+
 ```bash
 npm run deploy:prod
 ```
@@ -98,6 +103,7 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 ### Vercel
 
 1. **Conectar repositorio:**
+
    ```bash
    npm install -g vercel
    vercel login
@@ -125,6 +131,7 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 ### AWS S3 + CloudFront
 
 1. **Build y upload:**
+
    ```bash
    npm run deploy:prod
    aws s3 sync dist/ s3://tu-bucket --delete
@@ -141,21 +148,21 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
    server {
        listen 443 ssl http2;
        server_name tudominio.com;
-       
+
        ssl_certificate /path/to/cert.pem;
        ssl_certificate_key /path/to/key.pem;
-       
+
        root /var/www/chatbot-saas/dist;
        index index.html;
-       
+
        # SPA routing
        location / {
            try_files $uri $uri/ /index.html;
        }
-       
+
        # Security headers
        include /etc/nginx/security-headers.conf;
-       
+
        # Gzip compression
        gzip on;
        gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
@@ -179,6 +186,7 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 ### 3. Performance Monitoring
 
 El sistema incluye monitoreo automático de:
+
 - Core Web Vitals (LCP, FID, CLS)
 - Tiempo de carga de página
 - Errores de JavaScript
@@ -200,34 +208,34 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run security audit
-      run: npm audit --audit-level=high
-    
-    - name: Run tests
-      run: npm test
-    
-    - name: Build for production
-      run: npm run deploy:prod
-      env:
-        PUBLIC_API_URL: ${{ secrets.API_URL }}
-        PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_KEY }}
-        PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-    
-    - name: Deploy to server
-      # Agregar step de deployment específico
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --audit-level=high
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build for production
+        run: npm run deploy:prod
+        env:
+          PUBLIC_API_URL: ${{ secrets.API_URL }}
+          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_KEY }}
+          PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+      - name: Deploy to server
+        # Agregar step de deployment específico
 ```
 
 ## 🚨 Troubleshooting
@@ -235,6 +243,7 @@ jobs:
 ### Problemas Comunes
 
 1. **Build falla:**
+
    ```bash
    npm run clean
    npm install
@@ -269,20 +278,24 @@ curl -I https://api.tudominio.com/health
 ## 📈 Optimización de Performance
 
 ### 1. Compresión
+
 - Habilitar Gzip/Brotli en servidor
 - Configurar cache headers apropiados
 
 ### 2. CDN
+
 - Usar CloudFront, Cloudflare, o similar
 - Configurar cache de assets estáticos
 
 ### 3. Monitoring
+
 - Configurar alertas para errores
 - Monitorear métricas de performance
 
 ## 🔐 Backup y Rollback
 
 ### Backup
+
 ```bash
 # Backup de configuración
 cp .env.production .env.production.backup.$(date +%Y%m%d)
@@ -292,6 +305,7 @@ tar -czf dist-backup-$(date +%Y%m%d).tar.gz dist/
 ```
 
 ### Rollback
+
 ```bash
 # Rollback a versión anterior
 git checkout HEAD~1

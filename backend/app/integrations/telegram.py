@@ -97,7 +97,7 @@ class TelegramIntegration:
             await self.send_message(bot_token, chat_id, help_message, parse_mode="Markdown")
             
         elif command == "/info":
-            info_message = "🤖 **ChatBot SAAS**\n\nSoy un asistente virtual inteligente creado para ayudarte."
+            info_message = "🤖 **ConversaAI**\n\nSoy un asistente virtual inteligente creado para ayudarte."
             await self.send_message(bot_token, chat_id, info_message, parse_mode="Markdown")
             
         elif command == "/reset":

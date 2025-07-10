@@ -159,7 +159,7 @@ def main():
     
     args = parser.parse_args()
     
-    print("🎯 Gestor de Environments - ChatBot SAAS Backend")
+    print("🎯 Gestor de Environments - ConversaAI Backend")
     print("=" * 50)
     
     if args.action == 'list':

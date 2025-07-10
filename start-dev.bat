@@ -1,7 +1,7 @@
 @echo off
 REM Script para inicializar el entorno de desarrollo completo en Windows
 
-echo 🎯 ChatBot SAAS - Inicialización de Desarrollo
+echo 🎯 ConversaAI - Inicialización de Desarrollo
 echo ==============================================
 
 REM Verificar dependencias
