@@ -30,6 +30,12 @@ export default defineConfig({
         uploadToken: process.env.CODECOV_TOKEN,
       }),
     ],
+    resolve: {
+      alias: {
+        '~': '/src',
+        '@': '/src',
+      },
+    },
     define: {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     },

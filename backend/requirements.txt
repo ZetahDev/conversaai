@@ -96,7 +96,7 @@ fastapi-cors==0.0.6
 
 # Middleware de seguridad
 python-jose==3.3.0
-cryptography==41.0.8
+cryptography==42.0.8
 
 # Validación de URLs
 validators==0.22.0
