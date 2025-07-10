@@ -97,10 +97,9 @@ jobs:
 
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
-        working-directory: ./backend
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: coverage.xml
+          file: ./backend/coverage.xml
           flags: backend
           name: backend-coverage
           fail_ci_if_error: false
