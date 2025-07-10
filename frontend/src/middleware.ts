@@ -1,6 +1,6 @@
 // Security Middleware for Astro
 import type { MiddlewareHandler } from 'astro';
-import { config } from './lib/config.js';
+import { config } from './lib/config';
 
 // Rate limiting store (in-memory for development, use Redis in production)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
