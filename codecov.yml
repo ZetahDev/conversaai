@@ -1,0 +1,61 @@
+# ConversaAI - Codecov Configuration
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+        if_not_found: success
+        if_ci_failed: error
+    
+    patch:
+      default:
+        target: 80%
+        threshold: 1%
+        if_not_found: success
+        if_ci_failed: error
+
+  ignore:
+    - "backend/tests/"
+    - "backend/alembic/"
+    - "backend/scripts/"
+    - "frontend/node_modules/"
+    - "frontend/dist/"
+    - "frontend/.astro/"
+
+flags:
+  backend:
+    paths:
+      - backend/app/
+    carryforward: true
+  
+  frontend:
+    paths:
+      - frontend/src/
+    carryforward: true
+
+comment:
+  layout: "reach,diff,flags,tree,reach"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+  branches:
+    - main
+    - develop
+
+github_checks:
+  annotations: true
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no

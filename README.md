@@ -1,9 +1,12 @@
 # 🤖 ConversaAI - Sistema Completo de Asistentes Virtuales Empresariales
 
-[![Build Status](https://github.com/your-org/conversaai/workflows/CI/badge.svg)](https://github.com/your-org/conversaai/actions)
-[![Coverage](https://codecov.io/gh/your-org/conversaai/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/conversaai)
+[![Build Status](https://github.com/ZetahDev/conversaai/workflows/🚀%20ConversaAI%20CI/CD%20Pipeline/badge.svg)](https://github.com/ZetahDev/conversaai/actions)
+[![Coverage](https://codecov.io/gh/ZetahDev/conversaai/branch/main/graph/badge.svg)](https://codecov.io/gh/ZetahDev/conversaai)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/your-org/conversaai/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/ZetahDev/conversaai/releases)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Sistema completo de asistentes virtuales como servicio (SAAS) con integraciones múltiples, gestión empresarial y análisis avanzado. Diseñado para PYMEs que buscan automatizar su atención al cliente de manera profesional y escalable.
 
@@ -91,7 +94,7 @@ Sistema completo de asistentes virtuales como servicio (SAAS) con integraciones 
 #### 1️⃣ **Clonar y Configurar**
 
 ```bash
-git clone https://github.com/your-org/conversaai.git
+git clone https://github.com/ZetahDev/conversaai.git
 cd conversaai
 ```
 
@@ -239,8 +242,8 @@ Este proyecto está bajo la **Licencia MIT** - ver [LICENSE](LICENSE) para detal
 ### **Canales de Soporte**
 
 - 📖 **Documentación**: [docs/](docs/)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/your-org/conversaai/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-org/conversaai/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/ZetahDev/conversaai/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/ZetahDev/conversaai/discussions)
 - 📧 **Email**: support@yourdomain.com
 
 ## 🗺️ Roadmap
@@ -273,7 +276,7 @@ Este proyecto está bajo la **Licencia MIT** - ver [LICENSE](LICENSE) para detal
 | 🧪 **Cobertura Tests** | ![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen) | 80%+     |
 | 🔧 **Build Status**    | ![Build](https://img.shields.io/badge/build-passing-brightgreen)     | ✅       |
 | 🐛 **Issues Abiertas** | ![Issues](https://img.shields.io/github/issues/your-org/conversaai)  | < 10     |
-| ⭐ **GitHub Stars**    | ![Stars](https://img.shields.io/github/stars/your-org/conversaai)    | 1000+    |
+| ⭐ **GitHub Stars**    | ![Stars](https://img.shields.io/github/stars/ZetahDev/conversaai)    | 1000+    |
 | 📦 **Versión**         | ![Version](https://img.shields.io/badge/version-1.0.0-blue)          | Estable  |
 
 ---
