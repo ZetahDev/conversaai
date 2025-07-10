@@ -1,0 +1,575 @@
+---
+export interface Props {
+  title: string;
+  user?: any;
+  company?: any;
+}
+
+const { title, user, company } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="ConversaAI - Dashboard" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="h-full bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar Principal -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <div class="flex items-center space-x-2">
+              <svg class="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span class="font-bold text-xl text-gray-900 dark:text-white">ConversaAI</span>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="/dashboard" class="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Dashboard
+            </a>
+            <a href="/chatbots" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Chatbots
+            </a>
+            <a href="/conversations" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Conversaciones
+            </a>
+            <a href="/analytics" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Analytics
+            </a>
+            <a href="/metrics" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Métricas
+            </a>
+            <a href="/integrations" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Integraciones
+            </a>
+            <a href="/settings" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md">
+              Configuración
+            </a>
+          </div>
+
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button
+              type="button"
+              class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="mobile-menu-button"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
+              <span class="sr-only">Abrir menú principal</span>
+              <!-- Hamburger icon with animation -->
+              <div class="w-6 h-6 relative">
+                <span class="hamburger-line hamburger-line-1 absolute h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out"></span>
+                <span class="hamburger-line hamburger-line-2 absolute h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out"></span>
+                <span class="hamburger-line hamburger-line-3 absolute h-0.5 w-6 bg-current transform transition-all duration-300 ease-in-out"></span>
+              </div>
+            </button>
+          </div>
+
+          <!-- User Menu -->
+          <div class="flex items-center space-x-4">
+            <!-- User Dropdown -->
+            <div class="relative" id="user-menu">
+              <button
+                type="button"
+                class="flex items-center space-x-3 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                id="user-menu-button"
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                <div class="text-right">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {user?.email || 'Usuario'}
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {user?.role || 'USER'} - {company?.name || 'TechCorp'}
+                  </p>
+                </div>
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span class="text-white text-sm font-medium">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+                <!-- Dropdown arrow -->
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transform transition-all duration-200 ease-out opacity-0 scale-95 origin-top-right"
+                id="user-menu-dropdown"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="user-menu-button"
+              >
+                <div class="py-1" role="none">
+                  <!-- User Info Header -->
+                  <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                      {user?.email || 'Usuario'}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      {company?.name || 'TechCorp'}
+                    </p>
+                  </div>
+
+                  <!-- Menu Items -->
+                  <a
+                    href="/settings"
+                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    role="menuitem"
+                  >
+                    <svg class="mr-3 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Configuración
+                  </a>
+
+                  <a
+                    href="/dashboard"
+                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    role="menuitem"
+                  >
+                    <svg class="mr-3 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Dashboard
+                  </a>
+
+                  <div class="border-t border-gray-200 dark:border-gray-700"></div>
+
+                  <!-- Logout Button -->
+                  <button
+                    type="button"
+                    onclick="handleLogout()"
+                    class="flex items-center w-full px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    role="menuitem"
+                  >
+                    <svg class="mr-3 h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Cerrar Sesión
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div
+        class="md:hidden overflow-hidden transition-all duration-300 ease-in-out max-h-0 opacity-0"
+        id="mobile-menu"
+        style="max-height: 0px;"
+      >
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <a href="/dashboard" class="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Dashboard</span>
+            </div>
+          </a>
+          <a href="/chatbots" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span>Chatbots</span>
+            </div>
+          </a>
+          <a href="/conversations" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+              </svg>
+              <span>Conversaciones</span>
+            </div>
+          </a>
+          <a href="/analytics" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Analytics</span>
+            </div>
+          </a>
+          <a href="/metrics" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>Métricas</span>
+            </div>
+          </a>
+          <a href="/integrations" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+              <span>Integraciones</span>
+            </div>
+          </a>
+          <a href="/settings" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 transform hover:scale-105">
+            <div class="flex items-center space-x-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Configuración</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1">
+      <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <slot />
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+      // Theme toggle functionality
+      function initTheme() {
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      }
+
+      // Initialize theme on page load
+      initTheme();
+
+      // Logout functionality
+      function handleLogout() {
+        if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+          // Crear un formulario temporal para hacer POST
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = window.location.pathname + '?action=logout';
+          document.body.appendChild(form);
+          form.submit();
+        }
+      }
+
+      // Hacer la función global
+      (window as any).handleLogout = handleLogout;
+
+      // Highlight active navigation link
+      function highlightActiveLink() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('nav a[href]');
+
+        navLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href === currentPath) {
+            // Desktop navigation
+            if (link.closest('.hidden.md\\:flex')) {
+              link.classList.remove('text-gray-500', 'dark:text-gray-400');
+              link.classList.add('text-blue-600', 'dark:text-blue-400', 'font-semibold');
+            }
+            // Mobile navigation
+            if (link.closest('#mobile-menu')) {
+              link.classList.remove('text-gray-500', 'dark:text-gray-400');
+              link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900');
+            }
+          }
+        });
+      }
+
+      // User dropdown and mobile menu functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        // Highlight active navigation link
+        highlightActiveLink();
+        // User dropdown with animations
+        const userMenuButton = document.getElementById('user-menu-button');
+        const userMenuDropdown = document.getElementById('user-menu-dropdown');
+
+        if (userMenuButton && userMenuDropdown) {
+          let isDropdownOpen = false;
+
+          function openDropdown() {
+            if (!userMenuDropdown || !userMenuButton) return;
+
+            isDropdownOpen = true;
+            userMenuDropdown.classList.remove('hidden');
+            userMenuButton.setAttribute('aria-expanded', 'true');
+
+            // Trigger animation
+            setTimeout(() => {
+              if (userMenuDropdown) {
+                userMenuDropdown.classList.remove('opacity-0', 'scale-95');
+                userMenuDropdown.classList.add('opacity-100', 'scale-100');
+              }
+            }, 10);
+          }
+
+          function closeDropdown() {
+            if (!userMenuDropdown || !userMenuButton) return;
+
+            isDropdownOpen = false;
+            userMenuButton.setAttribute('aria-expanded', 'false');
+
+            // Trigger close animation
+            userMenuDropdown.classList.remove('opacity-100', 'scale-100');
+            userMenuDropdown.classList.add('opacity-0', 'scale-95');
+
+            // Hide after animation completes
+            setTimeout(() => {
+              if (userMenuDropdown) {
+                userMenuDropdown.classList.add('hidden');
+              }
+            }, 200);
+          }
+
+          // Toggle dropdown on button click
+          userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+
+            if (isDropdownOpen) {
+              closeDropdown();
+            } else {
+              openDropdown();
+            }
+          });
+
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function() {
+            if (isDropdownOpen) {
+              closeDropdown();
+            }
+          });
+
+          // Prevent dropdown from closing when clicking inside it
+          userMenuDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+          });
+
+          // Close dropdown on escape key
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isDropdownOpen) {
+              closeDropdown();
+            }
+          });
+        }
+
+        // Mobile menu with animations
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+          let isMenuOpen = false;
+
+          mobileMenuButton.addEventListener('click', function() {
+            isMenuOpen = !isMenuOpen;
+
+            if (isMenuOpen) {
+              // Open menu
+              document.body.classList.add('mobile-menu-open');
+              mobileMenuButton.setAttribute('aria-expanded', 'true');
+
+              // Trigger slide down animation
+              mobileMenu.style.maxHeight = '400px';
+              mobileMenu.style.opacity = '1';
+
+              // Add staggered animation to menu items
+              const menuItems = mobileMenu.querySelectorAll('a');
+              menuItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+
+                setTimeout(() => {
+                  item.style.transition = 'all 0.3s ease-out';
+                  item.style.opacity = '1';
+                  item.style.transform = 'translateX(0)';
+                }, 100 + (index * 50));
+              });
+
+            } else {
+              // Close menu
+              document.body.classList.remove('mobile-menu-open');
+              mobileMenuButton.setAttribute('aria-expanded', 'false');
+
+              // Trigger slide up animation
+              mobileMenu.style.maxHeight = '0px';
+              mobileMenu.style.opacity = '0';
+
+              // Reset menu items
+              const menuItems = mobileMenu.querySelectorAll('a');
+              menuItems.forEach((item) => {
+                item.style.transition = '';
+                item.style.opacity = '';
+                item.style.transform = '';
+              });
+            }
+          });
+
+          // Close mobile menu when clicking on a link
+          const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+          mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+              isMenuOpen = false;
+              document.body.classList.remove('mobile-menu-open');
+              mobileMenuButton.setAttribute('aria-expanded', 'false');
+              mobileMenu.style.maxHeight = '0px';
+              mobileMenu.style.opacity = '0';
+            });
+          });
+
+          // Close mobile menu on escape key
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isMenuOpen) {
+              isMenuOpen = false;
+              document.body.classList.remove('mobile-menu-open');
+              mobileMenuButton.setAttribute('aria-expanded', 'false');
+              mobileMenu.style.maxHeight = '0px';
+              mobileMenu.style.opacity = '0';
+            }
+          });
+        }
+      });
+    </script>
+
+    <style>
+      /* Tailwind CSS */
+      @import url('https://cdn.jsdelivr.net/npm/tailwindcss@3.3.0/dist/tailwind.min.css');
+
+      /* Custom styles */
+      :root {
+        --primary-50: #eff6ff;
+        --primary-100: #dbeafe;
+        --primary-200: #bfdbfe;
+        --primary-300: #93c5fd;
+        --primary-400: #60a5fa;
+        --primary-500: #3b82f6;
+        --primary-600: #2563eb;
+        --primary-700: #1d4ed8;
+        --primary-800: #1e40af;
+        --primary-900: #1e3a8a;
+      }
+
+      .text-primary-600 {
+        color: var(--primary-600);
+      }
+
+      .bg-primary-600 {
+        background-color: var(--primary-600);
+      }
+
+      .hover\:text-primary-600:hover {
+        color: var(--primary-600);
+      }
+
+      .dark .dark\:hover\:text-primary-400:hover {
+        color: var(--primary-400);
+      }
+
+      /* Hamburger menu animations */
+      .hamburger-line {
+        left: 0;
+        transform-origin: center;
+      }
+
+      .hamburger-line-1 {
+        top: 6px;
+      }
+
+      .hamburger-line-2 {
+        top: 12px;
+      }
+
+      .hamburger-line-3 {
+        top: 18px;
+      }
+
+      /* Active state - transform to X */
+      .mobile-menu-open .hamburger-line-1 {
+        transform: rotate(45deg) translate(3px, 3px);
+      }
+
+      .mobile-menu-open .hamburger-line-2 {
+        opacity: 0;
+        transform: scale(0);
+      }
+
+      .mobile-menu-open .hamburger-line-3 {
+        transform: rotate(-45deg) translate(3px, -3px);
+      }
+
+      /* Mobile menu slide animation */
+      .mobile-menu-open #mobile-menu {
+        max-height: 400px !important;
+        opacity: 1;
+      }
+
+      /* Staggered animation for menu items */
+      .mobile-menu-open #mobile-menu a {
+        animation: slideInFromLeft 0.3s ease-out forwards;
+      }
+
+      .mobile-menu-open #mobile-menu a:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+
+      .mobile-menu-open #mobile-menu a:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      .mobile-menu-open #mobile-menu a:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+
+      .mobile-menu-open #mobile-menu a:nth-child(4) {
+        animation-delay: 0.25s;
+      }
+
+      .mobile-menu-open #mobile-menu a:nth-child(5) {
+        animation-delay: 0.3s;
+      }
+
+      @keyframes slideInFromLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Smooth transitions for all interactive elements */
+      .transition-smooth {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Hover effects */
+      .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Focus states */
+      .focus-ring:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      }
+    </style>
+  </body>
+</html>

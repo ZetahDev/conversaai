@@ -1,0 +1,114 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import MetricsDashboard from '../components/dashboard/MetricsDashboard';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener datos del usuario para SSR
+let user: any = null;
+let company: any = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    // Token inválido, redirigir al login
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+} catch (error) {
+  console.error('Error obteniendo datos:', error);
+}
+---
+
+<DashboardLayout title="Dashboard de Métricas" user={user} company={company}>
+  <MetricsDashboard token={token.value} client:load />
+</DashboardLayout>
+
+
+
+<style>
+  /* Estilos adicionales para el dashboard */
+  body {
+    background-color: #f9fafb;
+  }
+  
+  /* Animaciones para las métricas en tiempo real */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Estilos para gráficos responsivos */
+  @media (max-width: 768px) {
+    .grid-cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .grid-cols-4 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+  }
+  
+  /* Estilos para barras de progreso */
+  .progress-bar {
+    transition: width 0.3s ease-in-out;
+  }
+  
+  /* Estilos para hover effects */
+  .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  /* Estilos para tabs */
+  .tab-active {
+    border-bottom-color: #3b82f6;
+    color: #3b82f6;
+  }
+  
+  .tab-inactive {
+    border-bottom-color: transparent;
+    color: #6b7280;
+  }
+  
+  .tab-inactive:hover {
+    color: #374151;
+    border-bottom-color: #d1d5db;
+  }
+</style>

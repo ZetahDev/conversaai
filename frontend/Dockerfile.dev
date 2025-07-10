@@ -1,0 +1,28 @@
+# Dockerfile para desarrollo del frontend
+FROM node:18-alpine
+
+# Establecer variables de entorno
+ENV NODE_ENV=development
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Instalar pnpm
+RUN corepack enable
+
+# Crear directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de configuración
+COPY package.json pnpm-lock.yaml* ./
+
+# Instalar dependencias
+RUN pnpm install --frozen-lockfile
+
+# Copiar código fuente
+COPY . .
+
+# Exponer puerto
+EXPOSE 4321
+
+# Comando por defecto
+CMD ["pnpm", "dev"]

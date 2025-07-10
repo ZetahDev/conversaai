@@ -1,0 +1,308 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import IntegrationModal from '../components/integrations/IntegrationModal';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener datos del usuario
+let user: any = null;
+let company: any = null;
+let integrations: any = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+
+  // Obtener integraciones disponibles
+  const integrationsResponse = await fetch('http://localhost:8000/api/v1/integrations/available');
+
+  if (integrationsResponse.ok) {
+    integrations = await integrationsResponse.json();
+  }
+} catch (error) {
+  console.error('Error obteniendo datos:', error);
+}
+---
+
+<DashboardLayout title="Integraciones" user={user} company={company}>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        🔗 Integraciones
+      </h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        Conecta tus asistentes virtuales con WhatsApp, Telegram, sitios web y más plataformas
+      </p>
+    </div>
+
+    <!-- Integraciones Disponibles -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {integrations?.integrations?.map((integration: any) => (
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700">
+          <div class="p-6">
+            <!-- Header de la integración -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <span class="text-3xl mr-3">{integration.icon}</span>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {integration.name}
+                  </h3>
+                  <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    integration.status === 'available' 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                  }`}>
+                    {integration.status === 'available' ? '✅ Disponible' : '🚧 Próximamente'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              {integration.description}
+            </p>
+
+            <!-- Características -->
+            <div class="mb-6">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                Características:
+              </h4>
+              <ul class="space-y-1">
+                {integration.features.map((feature: string) => (
+                  <li class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Botón de configuración -->
+            {integration.status === 'available' ? (
+              <button
+                onclick={`window.openIntegrationModal('${integration.id}')`}
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                🚀 Configurar Integración
+              </button>
+            ) : (
+              <button
+                disabled
+                class="w-full bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 px-4 py-2 rounded-lg text-sm font-medium cursor-not-allowed"
+              >
+                Próximamente
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Guías de Configuración -->
+    <div class="mt-12">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        📚 Guías de Configuración
+      </h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- WhatsApp Guide -->
+        <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-6 border border-green-200 dark:border-green-800">
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">📱</span>
+            <h3 class="text-lg font-semibold text-green-900 dark:text-green-100">
+              WhatsApp Business
+            </h3>
+          </div>
+          
+          <div class="space-y-3 text-sm">
+            <div class="flex items-start">
+              <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">1</span>
+              <div>
+                <p class="font-medium text-green-900 dark:text-green-100">Crear App en Meta</p>
+                <p class="text-green-700 dark:text-green-300">Ve a developers.facebook.com</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">2</span>
+              <div>
+                <p class="font-medium text-green-900 dark:text-green-100">Agregar WhatsApp API</p>
+                <p class="text-green-700 dark:text-green-300">Configura el producto en tu app</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">3</span>
+              <div>
+                <p class="font-medium text-green-900 dark:text-green-100">Configurar Webhook</p>
+                <p class="text-green-700 dark:text-green-300">URL: tu-dominio.com/webhook</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">4</span>
+              <div>
+                <p class="font-medium text-green-900 dark:text-green-100">Obtener Token</p>
+                <p class="text-green-700 dark:text-green-300">Genera token permanente</p>
+              </div>
+            </div>
+          </div>
+          
+          <button
+            onclick="window.openIntegrationModal('whatsapp')"
+            class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            📱 Configurar WhatsApp
+          </button>
+        </div>
+
+        <!-- Telegram Guide -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">✈️</span>
+            <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+              Telegram Bot
+            </h3>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div class="flex items-start">
+              <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">1</span>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-blue-100">Hablar con BotFather</p>
+                <p class="text-blue-700 dark:text-blue-300">Busca @BotFather en Telegram</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">2</span>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-blue-100">Crear Nuevo Bot</p>
+                <p class="text-blue-700 dark:text-blue-300">Usa comando /newbot</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">3</span>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-blue-100">Copiar Token</p>
+                <p class="text-blue-700 dark:text-blue-300">BotFather te dará el token</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">4</span>
+              <div>
+                <p class="font-medium text-blue-900 dark:text-blue-100">Configurar Aquí</p>
+                <p class="text-blue-700 dark:text-blue-300">Pega el token en nuestro sistema</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onclick="window.openIntegrationModal('telegram')"
+            class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ✈️ Configurar Telegram
+          </button>
+        </div>
+
+        <!-- Web Widget Guide -->
+        <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
+          <div class="flex items-center mb-4">
+            <span class="text-2xl mr-3">🌐</span>
+            <h3 class="text-lg font-semibold text-purple-900 dark:text-purple-100">
+              Widget Web
+            </h3>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <div class="flex items-start">
+              <span class="bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">1</span>
+              <div>
+                <p class="font-medium text-purple-900 dark:text-purple-100">Generar Código</p>
+                <p class="text-purple-700 dark:text-purple-300">Crea el código del widget</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">2</span>
+              <div>
+                <p class="font-medium text-purple-900 dark:text-purple-100">Copiar Código</p>
+                <p class="text-purple-700 dark:text-purple-300">Copia el HTML generado</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">3</span>
+              <div>
+                <p class="font-medium text-purple-900 dark:text-purple-100">Insertar en Web</p>
+                <p class="text-purple-700 dark:text-purple-300">Pega antes de &lt;/body&gt;</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <span class="bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-3 mt-0.5">4</span>
+              <div>
+                <p class="font-medium text-purple-900 dark:text-purple-100">¡Listo!</p>
+                <p class="text-purple-700 dark:text-purple-300">Tu asistente ya está en tu web</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onclick="window.openIntegrationModal('web')"
+            class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            🌐 Configurar Widget
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Configuración React -->
+  <IntegrationModal client:load token={token.value} />
+</DashboardLayout>
+
+<script is:inline>
+  // Global function to open integration modal
+  window.openIntegrationModal = function(integrationType) {
+    // Dispatch custom event for React component
+    const event = new CustomEvent('openIntegrationModal', {
+      detail: { integrationType }
+    });
+    window.dispatchEvent(event);
+  };
+</script>

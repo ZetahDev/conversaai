@@ -1,0 +1,450 @@
+{
+  "info": {
+    "_postman_id": "chatbot-saas-api",
+    "name": "ChatBot SAAS API",
+    "description": "Colección completa de endpoints para el sistema ChatBot SAAS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "company_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "chatbot_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        }
+      }
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Company & Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('company_id', response.user.company_id);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@miempresa.com\",\n  \"password\": \"Admin123!\",\n  \"full_name\": \"Administrador Principal\",\n  \"company_name\": \"Mi Empresa\",\n  \"company_email\": \"contacto@miempresa.com\",\n  \"company_type\": \"ECOMMERCE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "username",
+                  "value": "admin@miempresa.com"
+                },
+                {
+                  "key": "password",
+                  "value": "Admin123!"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Companies",
+      "item": [
+        {
+          "name": "Get My Company",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/companies/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "companies", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mi Empresa Actualizada\",\n  \"email\": \"nuevo@miempresa.com\",\n  \"company_type\": \"FOOD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/companies/{{company_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "companies", "{{company_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", ""]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"usuario1\",\n  \"email\": \"usuario1@miempresa.com\",\n  \"password\": \"Usuario123!\",\n  \"full_name\": \"Usuario de Prueba\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chatbots",
+      "item": [
+        {
+          "name": "List Chatbots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chatbots/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chatbots", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Chatbot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('chatbot_id', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bot de Atención al Cliente\",\n  \"description\": \"Chatbot para atender consultas de clientes\",\n  \"personality\": \"FRIENDLY\",\n  \"config\": {\n    \"ai_provider\": \"OPENAI\",\n    \"model\": \"gpt-3.5-turbo\",\n    \"temperature\": 0.7,\n    \"max_tokens\": 500,\n    \"system_prompt\": \"Eres un asistente amigable de atención al cliente.\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/chatbots/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chatbots", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Chatbot",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/chatbots/{{chatbot_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chatbots", "{{chatbot_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Chatbot",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bot Actualizado\",\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/chatbots/{{chatbot_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "chatbots", "{{chatbot_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Conversations",
+      "item": [
+        {
+          "name": "Start Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chatbot_id\": \"{{chatbot_id}}\",\n  \"user_name\": \"Cliente de Prueba\",\n  \"user_email\": \"cliente@ejemplo.com\",\n  \"channel\": \"WEB\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/conversations/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "conversations", ""]
+            }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hola, necesito ayuda con mi pedido\",\n  \"message_type\": \"TEXT\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/conversations/{{conversation_id}}/messages",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "v1",
+                "conversations",
+                "{{conversation_id}}",
+                "messages"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Knowledge Base",
+      "item": [
+        {
+          "name": "Create Knowledge Base",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Base de Conocimiento Principal\",\n  \"description\": \"Documentos y FAQ de la empresa\",\n  \"chatbot_id\": \"{{chatbot_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/knowledge/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "knowledge", ""]
+            }
+          }
+        },
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"FAQ General\",\n  \"content\": \"¿Cuáles son nuestros horarios de atención?\\nNuestros horarios son de lunes a viernes de 9:00 AM a 6:00 PM.\\n\\n¿Cómo puedo contactar soporte?\\nPuedes contactarnos por email a soporte@miempresa.com\",\n  \"document_type\": \"FAQ\",\n  \"knowledge_base_id\": \"{{knowledge_base_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/knowledge/documents",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "knowledge", "documents"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/analytics/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "analytics", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Conversation Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/analytics/conversations?period=7d",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "analytics", "conversations"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "7d"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

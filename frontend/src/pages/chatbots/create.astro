@@ -1,0 +1,295 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener datos del usuario
+let user: any = null;
+let company: any = null;
+let error: string | null = null;
+let success: string | null = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+
+} catch (err) {
+  console.error('Error obteniendo datos:', err);
+}
+
+// Manejar creación de chatbot
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const chatbotData = {
+      name: formData.get('name'),
+      description: formData.get('description'),
+      model: formData.get('model'),
+      system_prompt: formData.get('system_prompt'),
+      temperature: parseFloat(formData.get('temperature') as string) || 0.7,
+      max_tokens: parseInt(formData.get('max_tokens') as string) || 150,
+    };
+
+    const response = await fetch('http://localhost:8000/api/v1/chatbots/', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token.value}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(chatbotData),
+    });
+
+    if (response.ok) {
+      success = 'Chatbot creado exitosamente';
+      // Redirigir después de un breve delay
+      setTimeout(() => {
+        window.location.href = '/chatbots';
+      }, 2000);
+    } else {
+      const errorData = await response.json();
+      error = errorData.detail || 'Error al crear el chatbot';
+    }
+  } catch (err) {
+    error = 'Error al procesar la solicitud';
+    console.error('Error creando chatbot:', err);
+  }
+}
+
+// Manejar logout
+if (Astro.request.method === 'POST' && Astro.url.searchParams.get('action') === 'logout') {
+  Astro.cookies.delete('access_token');
+  return Astro.redirect('/login');
+}
+---
+
+<DashboardLayout title="Crear Chatbot - ChatBot SAAS" user={user} company={company}>
+  <!-- Header -->
+  <div class="px-4 py-6 sm:px-0">
+    <div class="flex items-center space-x-4">
+      <a href="/chatbots" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Crear Nuevo Chatbot
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Configura tu nuevo asistente virtual con IA.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes de estado -->
+  {error && (
+    <div class="mb-6 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-md p-4">
+      <div class="flex">
+        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        </svg>
+        <div class="ml-3">
+          <p class="text-sm text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {success && (
+    <div class="mb-6 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-md p-4">
+      <div class="flex">
+        <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+        <div class="ml-3">
+          <p class="text-sm text-green-800 dark:text-green-200">{success}</p>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Formulario -->
+  <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+    <form method="POST" class="space-y-6 p-6">
+      <!-- Información básica -->
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Información Básica
+        </h3>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Nombre del Chatbot *
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              required
+              class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+              placeholder="Ej: Asistente de Ventas"
+            />
+          </div>
+          <div>
+            <label for="model" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Modelo de IA *
+            </label>
+            <select
+              name="model"
+              id="model"
+              required
+              class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            >
+              <option value="">Selecciona un modelo</option>
+              <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+              <option value="gpt-4">GPT-4</option>
+              <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+              <option value="claude-3-haiku">Claude 3 Haiku</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Descripción
+          </label>
+          <textarea
+            name="description"
+            id="description"
+            rows="3"
+            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            placeholder="Describe el propósito y funcionalidad de tu chatbot..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Configuración de personalidad -->
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Personalidad y Comportamiento
+        </h3>
+        <div>
+          <label for="system_prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Prompt del Sistema *
+          </label>
+          <textarea
+            name="system_prompt"
+            id="system_prompt"
+            rows="6"
+            required
+            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            placeholder="Eres un asistente virtual especializado en... Debes responder de manera amigable y profesional..."
+          ></textarea>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Define cómo debe comportarse tu chatbot, su personalidad y las reglas que debe seguir.
+          </p>
+        </div>
+      </div>
+
+      <!-- Configuración avanzada -->
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Configuración Avanzada
+        </h3>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label for="temperature" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Creatividad (Temperature)
+            </label>
+            <input
+              type="range"
+              name="temperature"
+              id="temperature"
+              min="0"
+              max="1"
+              step="0.1"
+              value="0.7"
+              class="mt-1 block w-full"
+            />
+            <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span>Conservador (0)</span>
+              <span>Balanceado (0.7)</span>
+              <span>Creativo (1)</span>
+            </div>
+          </div>
+          <div>
+            <label for="max_tokens" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Máximo de tokens por respuesta
+            </label>
+            <input
+              type="number"
+              name="max_tokens"
+              id="max_tokens"
+              min="50"
+              max="4000"
+              value="150"
+              class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            />
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              Controla la longitud máxima de las respuestas (50-4000 tokens)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <a
+          href="/chatbots"
+          class="bg-white dark:bg-gray-700 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Cancelar
+        </a>
+        <button
+          type="submit"
+          class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          Crear Chatbot
+        </button>
+      </div>
+    </form>
+  </div>
+</DashboardLayout>
+
+<script>
+  // Actualizar el valor mostrado del slider de temperature
+  const temperatureSlider = document.getElementById('temperature') as HTMLInputElement;
+  const temperatureDisplay = document.createElement('span');
+  temperatureDisplay.className = 'text-sm font-medium text-gray-900 dark:text-white';
+  temperatureSlider.parentNode?.insertBefore(temperatureDisplay, temperatureSlider.nextSibling);
+  
+  function updateTemperatureDisplay() {
+    temperatureDisplay.textContent = ` (${temperatureSlider.value})`;
+  }
+  
+  temperatureSlider.addEventListener('input', updateTemperatureDisplay);
+  updateTemperatureDisplay(); // Inicializar
+</script>

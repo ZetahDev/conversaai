@@ -1,0 +1,246 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener datos del usuario para SSR
+let user: any = null;
+let company: any = null;
+let chatbots: any[] = [];
+let stats: any = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    // Token inválido, redirigir al login
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+
+  // Obtener chatbots
+  const chatbotsResponse = await fetch('http://localhost:8000/api/v1/chatbots/', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (chatbotsResponse.ok) {
+    const chatbotsData = await chatbotsResponse.json();
+    chatbots = chatbotsData.items || [];
+  }
+
+  // Obtener estadísticas del dashboard
+  const statsResponse = await fetch('http://localhost:8000/api/v1/analytics/dashboard', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (statsResponse.ok) {
+    stats = await statsResponse.json();
+  }
+
+} catch (error) {
+  console.error('Error obteniendo datos:', error);
+}
+
+// Manejar logout
+if (Astro.request.method === 'POST' && Astro.url.searchParams.get('action') === 'logout') {
+  Astro.cookies.delete('access_token');
+  return Astro.redirect('/login');
+}
+---
+
+<DashboardLayout title="Dashboard - ConversaAI" user={user} company={company}>
+  <!-- Header -->
+  <div class="px-4 py-6 sm:px-0">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Dashboard
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Bienvenido de vuelta, {user?.email}. Aquí tienes un resumen de tu actividad.
+    </p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Asistentes Activos
+              </dt>
+              <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                {stats?.chatbots_activos || 0}
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                    Conversaciones Hoy
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                    {stats?.conversaciones_hoy || 0}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                    Usuarios Únicos
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                    {stats?.usuarios_unicos || 0}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                    Satisfacción
+                  </dt>
+                  <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                    {stats?.satisfaccion ? stats.satisfaccion : 'N/A'}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+
+  <!-- Chatbots List -->
+  <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+            Mis Asistentes
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+            Lista de todos tus asistentes virtuales configurados
+          </p>
+        </div>
+        <a href="/chatbots/create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+          Crear Asistente
+        </a>
+      </div>
+    </div>
+
+    <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+      {chatbots.length === 0 ? (
+        <li class="px-4 py-6 text-center">
+          <div class="text-gray-500 dark:text-gray-400">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay asistentes</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Comienza creando tu primer asistente virtual.
+            </p>
+          </div>
+        </li>
+      ) : (
+        chatbots.map((chatbot: any) => (
+          <li class="px-4 py-4 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    {chatbot.name}
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-400">
+                    {chatbot.description}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  {chatbot.status}
+                </span>
+              </div>
+            </div>
+          </li>
+        ))
+      )}
+    </ul>
+  </div>
+</DashboardLayout>

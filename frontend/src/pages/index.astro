@@ -1,0 +1,232 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/Navbar.astro';
+import Hero from '@/components/Hero.astro';
+import Features from '@/components/Features.astro';
+import Pricing from '@/components/Pricing.astro';
+import CTA from '@/components/CTA.astro';
+import Footer from '@/components/Footer.astro';
+
+const title = 'ConversaAI - Automatiza tu atención al cliente con IA';
+const description = 'Plataforma completa para crear chatbots inteligentes para tu negocio. Integración multi-canal, entrenamiento personalizado y analytics avanzados.';
+---
+
+<Layout title={title} description={description}>
+  <Navbar />
+
+  <!-- Hero Section Mejorado -->
+  <section class="relative min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+
+    <!-- Floating Elements -->
+    <div class="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+    <div class="absolute top-40 right-10 w-32 h-32 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-20 w-24 h-24 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+
+    <div class="relative container mx-auto px-4 py-20 lg:py-32">
+      <div class="text-center max-w-5xl mx-auto">
+        <!-- Badge -->
+        <div class="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900 rounded-full text-blue-800 dark:text-blue-200 text-sm font-medium mb-8">
+          <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+          🚀 Nuevo: Dashboard de Métricas en Tiempo Real
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-8 leading-tight">
+          <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            ConversaAI
+          </span>
+          <br>
+          <span class="text-gray-900 dark:text-white">para tu</span>
+          <br>
+          <span class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
+            Negocio
+          </span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+          Automatiza tu atención al cliente con <strong>inteligencia artificial avanzada</strong>.
+          Crea asistentes virtuales inteligentes para WhatsApp, Telegram y Web en minutos.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+          <a
+            href="/register"
+            class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"
+          >
+            <span class="mr-2">🚀</span>
+            Comenzar Gratis
+            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </a>
+
+          <a
+            href="/login"
+            class="inline-flex items-center px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"
+          >
+            <span class="mr-2">👤</span>
+            Iniciar Sesión
+          </a>
+
+          <a
+            href="#demo"
+            class="inline-flex items-center px-6 py-3 text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+          >
+            <span class="mr-2">▶️</span>
+            Ver Demo
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">500+</div>
+            <div class="text-gray-600 dark:text-gray-400">Empresas Activas</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">50K+</div>
+            <div class="text-gray-600 dark:text-gray-400">Conversaciones/Día</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400 mb-2">99.9%</div>
+            <div class="text-gray-600 dark:text-gray-400">Uptime</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl md:text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">24/7</div>
+            <div class="text-gray-600 dark:text-gray-400">Soporte</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+      <!-- Features Grid -->
+      <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            IA Avanzada
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            Asistentes virtuales inteligentes que aprenden de cada conversación para brindar mejores respuestas.
+          </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Integración Rápida
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            Conecta tu asistente virtual con WhatsApp, Telegram, tu sitio web y más en minutos.
+          </p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Analytics Detallados
+          </h3>
+          <p class="text-gray-600 dark:text-gray-300">
+            Métricas completas para optimizar la experiencia de tus clientes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <Features />
+
+  <!-- Pricing Section -->
+  <Pricing />
+
+  <!-- CTA Section -->
+  <CTA />
+
+  <!-- Footer -->
+  <Footer />
+</Layout>
+
+<style>
+  /* Animaciones personalizadas */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  /* Grid pattern background */
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Gradient text support for older browsers */
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom button hover effects */
+  .group:hover .group-hover\:translate-x-1 {
+    transform: translateX(0.25rem);
+  }
+
+  /* Responsive text sizing */
+  @media (max-width: 640px) {
+    .text-5xl {
+      font-size: 2.5rem;
+    }
+    .text-7xl {
+      font-size: 3.5rem;
+    }
+    .text-8xl {
+      font-size: 4rem;
+    }
+  }
+</style>

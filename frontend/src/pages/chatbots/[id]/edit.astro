@@ -1,0 +1,324 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener el ID del chatbot
+const { id } = Astro.params;
+
+// Obtener datos del usuario y chatbot
+let user: any = null;
+let company: any = null;
+let chatbot: any = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+
+  // Obtener chatbot específico
+  const chatbotResponse = await fetch(`http://localhost:8000/api/v1/chatbots/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (chatbotResponse.ok) {
+    chatbot = await chatbotResponse.json();
+  } else {
+    // Chatbot no encontrado, redirigir a la lista
+    return Astro.redirect('/chatbots');
+  }
+} catch (error) {
+  console.error('Error obteniendo datos:', error);
+  return Astro.redirect('/chatbots');
+}
+---
+
+<DashboardLayout title={`Configurar ${chatbot?.name || 'Chatbot'}`} user={user} company={company}>
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            Configurar Chatbot
+          </h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Edita la configuración de tu chatbot "{chatbot?.name}"
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <a
+            href="/chatbots"
+            class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ← Volver
+          </a>
+          <a
+            href={`/chatbots/${id}/chat`}
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            💬 Probar Chat
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de edición -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+      <div class="p-6">
+        <form id="editChatbotForm" class="space-y-6">
+          <!-- Información básica -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Nombre del Chatbot
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={chatbot?.name || ''}
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Estado
+              </label>
+              <select
+                id="status"
+                name="status"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="ACTIVE" selected={chatbot?.status === 'ACTIVE'}>Activo</option>
+                <option value="DRAFT" selected={chatbot?.status === 'DRAFT'}>Borrador</option>
+                <option value="INACTIVE" selected={chatbot?.status === 'INACTIVE'}>Inactivo</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Descripción
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Describe qué hace tu chatbot..."
+            >{chatbot?.description || ''}</textarea>
+          </div>
+
+          <!-- Configuración del modelo -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+              Configuración del Modelo
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label for="model" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Modelo de IA
+                </label>
+                <select
+                  id="model"
+                  name="model"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="gpt-3.5-turbo" selected={chatbot?.model === 'gpt-3.5-turbo'}>GPT-3.5 Turbo</option>
+                  <option value="gpt-4" selected={chatbot?.model === 'gpt-4'}>GPT-4</option>
+                  <option value="claude-3-sonnet" selected={chatbot?.model === 'claude-3-sonnet'}>Claude 3 Sonnet</option>
+                  <option value="claude-3-haiku" selected={chatbot?.model === 'claude-3-haiku'}>Claude 3 Haiku</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="temperature" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Creatividad (Temperature)
+                </label>
+                <input
+                  type="number"
+                  id="temperature"
+                  name="temperature"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={chatbot?.temperature || 0.7}
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label for="max_tokens" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Máximo de Tokens
+                </label>
+                <input
+                  type="number"
+                  id="max_tokens"
+                  name="max_tokens"
+                  min="50"
+                  max="4000"
+                  value={chatbot?.max_tokens || 500}
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt del sistema -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+              Personalidad del Chatbot
+            </h3>
+            
+            <div>
+              <label for="system_prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Prompt del Sistema
+              </label>
+              <textarea
+                id="system_prompt"
+                name="system_prompt"
+                rows="6"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Eres un asistente virtual amigable y profesional..."
+              >{chatbot?.system_prompt || ''}</textarea>
+              <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Define cómo debe comportarse tu chatbot y qué personalidad debe tener.
+              </p>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <div class="flex justify-between">
+              <button
+                type="button"
+                id="deleteChatbot"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                🗑️ Eliminar Chatbot
+              </button>
+              
+              <div class="flex space-x-3">
+                <button
+                  type="button"
+                  onclick="window.location.href='/chatbots'"
+                  class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                >
+                  💾 Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</DashboardLayout>
+
+<script define:vars={{ chatbotId: id, token: token?.value }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editChatbotForm');
+    const deleteButton = document.getElementById('deleteChatbot');
+
+    // Manejar envío del formulario
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const data = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        model: formData.get('model'),
+        system_prompt: formData.get('system_prompt'),
+        temperature: parseFloat(formData.get('temperature')),
+        max_tokens: parseInt(formData.get('max_tokens')),
+        status: formData.get('status')
+      };
+
+      try {
+        const response = await fetch(`http://localhost:8000/api/v1/chatbots/${chatbotId}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert('✅ Chatbot actualizado exitosamente');
+          window.location.href = '/chatbots';
+        } else {
+          const error = await response.json();
+          alert(`❌ Error: ${error.detail || 'No se pudo actualizar el chatbot'}`);
+        }
+      } catch (error) {
+        alert(`❌ Error de conexión: ${error.message}`);
+      }
+    });
+
+    // Manejar eliminación
+    deleteButton.addEventListener('click', async function() {
+      if (confirm('⚠️ ¿Estás seguro de que quieres eliminar este chatbot? Esta acción no se puede deshacer.')) {
+        try {
+          const response = await fetch(`http://localhost:8000/api/v1/chatbots/${chatbotId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+          });
+
+          if (response.ok) {
+            alert('✅ Chatbot eliminado exitosamente');
+            window.location.href = '/chatbots';
+          } else {
+            const error = await response.json();
+            alert(`❌ Error: ${error.detail || 'No se pudo eliminar el chatbot'}`);
+          }
+        } catch (error) {
+          alert(`❌ Error de conexión: ${error.message}`);
+        }
+      }
+    });
+  });
+</script>

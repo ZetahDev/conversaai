@@ -1,0 +1,186 @@
+---
+// Navbar component para la landing page
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <span class="font-bold text-xl text-gray-900 dark:text-white">ChatBot SAAS</span>
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="#features" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          Características
+        </a>
+        <a href="#pricing" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          Precios
+        </a>
+        <a href="/demo" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          Demo
+        </a>
+        <a href="/docs" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          Documentación
+        </a>
+        <a href="/contact" class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          Contacto
+        </a>
+      </div>
+
+      <!-- Auth Buttons -->
+      <div class="hidden md:flex items-center space-x-4">
+        <a 
+          href="/login" 
+          class="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium"
+        >
+          Iniciar Sesión
+        </a>
+        <a 
+          href="/register" 
+          class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+        >
+          Comenzar Gratis
+        </a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button 
+          type="button" 
+          class="mobile-menu-button text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none focus:text-primary-600"
+          aria-label="Abrir menú"
+        >
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu hidden md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a 
+        href="#features" 
+        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+      >
+        Características
+      </a>
+      <a 
+        href="#pricing" 
+        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+      >
+        Precios
+      </a>
+      <a 
+        href="/demo" 
+        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+      >
+        Demo
+      </a>
+      <a 
+        href="/docs" 
+        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+      >
+        Documentación
+      </a>
+      <a 
+        href="/contact" 
+        class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+      >
+        Contacto
+      </a>
+      
+      <!-- Mobile Auth Buttons -->
+      <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+        <a 
+          href="/login" 
+          class="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors font-medium"
+        >
+          Iniciar Sesión
+        </a>
+        <a 
+          href="/register" 
+          class="block px-3 py-2 mt-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md font-medium transition-colors text-center"
+        >
+          Comenzar Gratis
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Toggle mobile menu
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    
+    mobileMenuButton?.addEventListener('click', function(event) {
+      const button = event.currentTarget as HTMLElement;
+      mobileMenu?.classList.toggle('hidden');
+
+      // Toggle icon
+      const icon = button.querySelector('svg');
+      if (mobileMenu?.classList.contains('hidden')) {
+        if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+      } else {
+        if (icon) icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+      }
+    });
+
+    // Close mobile menu when clicking on links
+    const mobileLinks = document.querySelectorAll('.mobile-menu a');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        mobileMenu?.classList.add('hidden');
+        const icon = mobileMenuButton?.querySelector('svg');
+        if (icon) {
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+        }
+      });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const link = e.currentTarget as HTMLAnchorElement;
+        const href = link.getAttribute('href');
+        if (href) {
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    });
+
+    // Navbar background on scroll
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('nav');
+      if (window.scrollY > 10) {
+        navbar?.classList.add('shadow-lg');
+        navbar?.classList.remove('bg-white/95', 'dark:bg-gray-900/95');
+        navbar?.classList.add('bg-white', 'dark:bg-gray-900');
+      } else {
+        navbar?.classList.remove('shadow-lg');
+        navbar?.classList.remove('bg-white', 'dark:bg-gray-900');
+        navbar?.classList.add('bg-white/95', 'dark:bg-gray-900/95');
+      }
+    });
+  });
+</script>

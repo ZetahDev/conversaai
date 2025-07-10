@@ -1,0 +1,313 @@
+---
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import type { RegisterRequest, RegisterResponse } from '@/types/api';
+import { apiUrl, authHeaders } from '@/lib/config';
+
+// Manejar el formulario de registro en el servidor
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const username = formData.get('username') as string;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const fullName = formData.get('fullName') as string;
+    const companyName = formData.get('companyName') as string;
+    const companyEmail = formData.get('companyEmail') as string;
+    const companyType = formData.get('companyType') as string;
+
+    // Preparar datos para el registro
+    const registerData: RegisterRequest = {
+      username,
+      email,
+      password,
+      full_name: fullName,
+      company_name: companyName,
+      company_email: companyEmail,
+      company_type: companyType as RegisterRequest['company_type']
+    };
+
+    // Llamar a la API de backend para registro
+    const response = await fetch('http://localhost:8000/api/v1/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registerData),
+    });
+
+    if (response.ok) {
+      const data: RegisterResponse = await response.json();
+      
+      // Guardar el token en una cookie
+      Astro.cookies.set('access_token', data.access_token, {
+        httpOnly: true,
+        secure: import.meta.env.PROD, // Solo secure en producción
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 días
+        path: '/',
+      });
+
+      // Redirigir al dashboard
+      return Astro.redirect('/dashboard');
+    } else {
+      const error = await response.json();
+      console.error('Error de registro:', error);
+    }
+  } catch (error) {
+    console.error('Error en el registro:', error);
+  }
+}
+
+// Verificar si ya está logueado
+const token = Astro.cookies.get('access_token');
+if (token) {
+  return Astro.redirect('/dashboard');
+}
+
+// Obtener el plan seleccionado de la URL
+const plan = Astro.url.searchParams.get('plan') || 'professional';
+---
+
+<AuthLayout title="Crear Cuenta - ConversaAI">
+  <div>
+    <h2 class="text-center text-3xl font-bold text-gray-900 dark:text-white">
+      Crear tu Cuenta
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+      ¿Ya tienes una cuenta?
+      <a href="/login" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">
+        Inicia sesión aquí
+      </a>
+    </p>
+  </div>
+
+  <form class="mt-8 space-y-6" method="POST">
+    <!-- Información Personal -->
+    <div class="space-y-4">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+        Información Personal
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Nombre Completo
+          </label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            required
+            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            placeholder="Juan Pérez"
+          />
+        </div>
+
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Nombre de Usuario
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+            placeholder="juanperez"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Correo Electrónico
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+          class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+          placeholder="juan@miempresa.com"
+        />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Contraseña
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          required
+          class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+          placeholder="••••••••"
+        />
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Mínimo 8 caracteres, incluye mayúsculas, minúsculas y números
+        </p>
+      </div>
+    </div>
+
+    <!-- Información de la Empresa -->
+    <div class="space-y-4">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">
+        Información de tu Empresa
+      </h3>
+      
+      <div>
+        <label for="companyName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Nombre de la Empresa
+        </label>
+        <input
+          id="companyName"
+          name="companyName"
+          type="text"
+          required
+          class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+          placeholder="Mi Empresa S.A.S"
+        />
+      </div>
+
+      <div>
+        <label for="companyEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Email de la Empresa
+        </label>
+        <input
+          id="companyEmail"
+          name="companyEmail"
+          type="email"
+          required
+          class="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+          placeholder="contacto@miempresa.com"
+        />
+      </div>
+
+      <div>
+        <label for="companyType" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Tipo de Negocio
+        </label>
+        <select
+          id="companyType"
+          name="companyType"
+          required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+        >
+          <option value="">Selecciona tu tipo de negocio</option>
+          <option value="FOOD" selected={plan === 'basic'}>Restaurante / Comida</option>
+          <option value="BARBERSHOP">Barbería / Salón de Belleza</option>
+          <option value="ECOMMERCE" selected={plan === 'professional'}>Ecommerce / Tienda Online</option>
+          <option value="RETAIL">Tienda Física / Retail</option>
+          <option value="SERVICES">Servicios Profesionales</option>
+          <option value="HEALTH">Salud / Medicina</option>
+          <option value="EDUCATION">Educación / Capacitación</option>
+          <option value="OTHER">Otro</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Plan Seleccionado -->
+    <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4">
+      <h3 class="text-sm font-medium text-primary-800 dark:text-primary-200 mb-2">
+        📋 Plan Seleccionado: {plan === 'basic' ? 'Básico' : plan === 'professional' ? 'Profesional' : 'Empresarial'}
+      </h3>
+      <p class="text-xs text-primary-700 dark:text-primary-300">
+        {plan === 'basic' && '5,000 mensajes/mes • 1 asistente • 2 canales • $29/mes'}
+        {plan === 'professional' && '20,000 mensajes/mes • 3 asistentes • Todos los canales • $79/mes'}
+        {plan === 'enterprise' && '100,000 mensajes/mes • 10 asistentes • API personalizada • $199/mes'}
+      </p>
+      <p class="text-xs text-primary-600 dark:text-primary-400 mt-1">
+        ✨ 14 días de prueba gratuita incluidos
+      </p>
+    </div>
+
+    <!-- Términos y Condiciones -->
+    <div class="flex items-center">
+      <input
+        id="terms"
+        name="terms"
+        type="checkbox"
+        required
+        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
+      />
+      <label for="terms" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+        Acepto los 
+        <a href="/terms" class="text-primary-600 hover:text-primary-500 dark:text-primary-400">Términos y Condiciones</a>
+        y la 
+        <a href="/privacy" class="text-primary-600 hover:text-primary-500 dark:text-primary-400">Política de Privacidad</a>
+      </label>
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button
+        type="submit"
+        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-colors"
+      >
+        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+          <svg class="h-5 w-5 text-primary-500 group-hover:text-primary-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 1L3 8l1.5 1.5L10 4l5.5 5.5L17 8l-7-7z" clip-rule="evenodd" />
+          </svg>
+        </span>
+        Crear Cuenta y Comenzar Prueba Gratuita
+      </button>
+    </div>
+  </form>
+
+  <!-- Beneficios -->
+  <div class="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+    <h3 class="text-sm font-medium text-green-800 dark:text-green-200 mb-2">
+      🎉 ¿Qué obtienes al registrarte?
+    </h3>
+    <ul class="text-xs text-green-700 dark:text-green-300 space-y-1">
+      <li>✅ 14 días de prueba gratuita completa</li>
+      <li>✅ Configuración guiada paso a paso</li>
+      <li>✅ Soporte técnico incluido</li>
+      <li>✅ Acceso a todas las funciones del plan</li>
+      <li>✅ Sin compromiso, cancela cuando quieras</li>
+    </ul>
+  </div>
+</AuthLayout>
+
+<script>
+  // Manejar el formulario con JavaScript para mejor UX
+  const form = document.querySelector('form');
+  const submitButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+  form?.addEventListener('submit', function() {
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Creando tu cuenta...
+      `;
+    }
+  });
+
+  // Validación de contraseña en tiempo real
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  passwordInput?.addEventListener('input', function(e) {
+    const target = e.target as HTMLInputElement;
+    const password = target.value;
+    const isValid = password.length >= 8 &&
+                   /[A-Z]/.test(password) &&
+                   /[a-z]/.test(password) &&
+                   /[0-9]/.test(password);
+
+    if (password.length > 0) {
+      if (isValid) {
+        target.classList.remove('border-red-300');
+        target.classList.add('border-green-300');
+      } else {
+        target.classList.remove('border-green-300');
+        target.classList.add('border-red-300');
+      }
+    }
+  });
+</script>

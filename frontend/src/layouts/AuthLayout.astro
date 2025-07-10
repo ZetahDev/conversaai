@@ -1,0 +1,80 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "ConversaAI - Plataforma de asistentes virtuales inteligentes" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{title}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" 
+      rel="stylesheet" 
+    />
+    
+    <!-- Theme -->
+    <script is:inline>
+      const getThemePreference = () => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      };
+      
+      const isDark = getThemePreference() === 'dark';
+      document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+    </script>
+  </head>
+  
+  <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+    <div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <!-- Header -->
+      <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="flex justify-center">
+          <a href="/" class="flex items-center space-x-2">
+            <svg class="w-10 h-10 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span class="font-bold text-2xl text-gray-900 dark:text-white">ConversaAI</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
+          <slot />
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-8 text-center">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          © 2024 ConversaAI. Todos los derechos reservados.
+        </p>
+        <div class="mt-2 flex justify-center space-x-4">
+          <a href="/privacy" class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+            Privacidad
+          </a>
+          <a href="/terms" class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+            Términos
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

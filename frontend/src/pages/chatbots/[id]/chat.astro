@@ -1,0 +1,335 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+
+// Verificar autenticación
+const token = Astro.cookies.get('access_token');
+if (!token) {
+  return Astro.redirect('/login');
+}
+
+// Obtener el ID del chatbot
+const { id } = Astro.params;
+
+// Obtener datos del usuario y chatbot
+let user: any = null;
+let company: any = null;
+let chatbot: any = null;
+
+try {
+  // Obtener información del usuario
+  const userResponse = await fetch('http://localhost:8000/api/v1/auth/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (userResponse.ok) {
+    user = await userResponse.json();
+  } else {
+    Astro.cookies.delete('access_token');
+    return Astro.redirect('/login');
+  }
+
+  // Obtener información de la empresa
+  const companyResponse = await fetch('http://localhost:8000/api/v1/companies/me', {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (companyResponse.ok) {
+    company = await companyResponse.json();
+  }
+
+  // Obtener chatbot específico
+  const chatbotResponse = await fetch(`http://localhost:8000/api/v1/chatbots/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token.value}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (chatbotResponse.ok) {
+    chatbot = await chatbotResponse.json();
+  } else {
+    // Chatbot no encontrado, redirigir a la lista
+    return Astro.redirect('/chatbots');
+  }
+} catch (error) {
+  console.error('Error obteniendo datos:', error);
+  return Astro.redirect('/chatbots');
+}
+---
+
+<DashboardLayout title={`Chat con ${chatbot?.name || 'Chatbot'}`} user={user} company={company}>
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+            💬 Chat con {chatbot?.name}
+          </h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">
+            Prueba tu chatbot en tiempo real
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <a
+            href="/chatbots"
+            class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ← Volver
+          </a>
+          <a
+            href={`/chatbots/${id}/edit`}
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ⚙️ Configurar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+      <!-- Chat Header -->
+      <div class="bg-blue-600 dark:bg-blue-700 px-6 py-4">
+        <div class="flex items-center">
+          <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+            <span class="text-white font-bold text-lg">🤖</span>
+          </div>
+          <div>
+            <h3 class="text-white font-medium">{chatbot?.name}</h3>
+            <p class="text-blue-100 text-sm">
+              {chatbot?.status === 'ACTIVE' ? '🟢 En línea' : '🔴 Fuera de línea'} • Modelo: {chatbot?.model}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <div id="chatMessages" class="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-900">
+        <!-- Mensaje de bienvenida -->
+        <div class="flex items-start">
+          <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <span class="text-white text-sm">🤖</span>
+          </div>
+          <div class="bg-white dark:bg-gray-700 rounded-lg px-4 py-2 max-w-xs lg:max-w-md shadow">
+            <p class="text-gray-900 dark:text-white text-sm">
+              ¡Hola! Soy {chatbot?.name}. ¿En qué puedo ayudarte hoy?
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {new Date().toLocaleTimeString()}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input -->
+      <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+        <form id="chatForm" class="flex space-x-3">
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Escribe tu mensaje..."
+            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            autocomplete="off"
+          />
+          <button
+            type="submit"
+            id="sendButton"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Enviar
+          </button>
+        </form>
+        
+        <!-- Typing indicator -->
+        <div id="typingIndicator" class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <span class="animate-pulse">🤖 {chatbot?.name} está escribiendo...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Info -->
+    <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+      <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">
+        ℹ️ Información del Chat
+      </h4>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div>
+          <span class="text-blue-700 dark:text-blue-300 font-medium">Modelo:</span>
+          <span class="text-blue-600 dark:text-blue-400 ml-1">{chatbot?.model}</span>
+        </div>
+        <div>
+          <span class="text-blue-700 dark:text-blue-300 font-medium">Creatividad:</span>
+          <span class="text-blue-600 dark:text-blue-400 ml-1">{chatbot?.temperature}</span>
+        </div>
+        <div>
+          <span class="text-blue-700 dark:text-blue-300 font-medium">Max Tokens:</span>
+          <span class="text-blue-600 dark:text-blue-400 ml-1">{chatbot?.max_tokens}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</DashboardLayout>
+
+<script define:vars={{ chatbotId: id, token: token?.value, chatbotName: chatbot?.name }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    // Función para agregar mensaje al chat
+    function addMessage(content, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'flex items-start';
+      
+      if (isUser) {
+        messageDiv.className += ' justify-end';
+        messageDiv.innerHTML = `
+          <div class="bg-blue-600 text-white rounded-lg px-4 py-2 max-w-xs lg:max-w-md shadow">
+            <p class="text-sm">${content}</p>
+            <p class="text-xs text-blue-100 mt-1">${new Date().toLocaleTimeString()}</p>
+          </div>
+          <div class="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+            <span class="text-white text-sm">👤</span>
+          </div>
+        `;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <span class="text-white text-sm">🤖</span>
+          </div>
+          <div class="bg-white dark:bg-gray-700 rounded-lg px-4 py-2 max-w-xs lg:max-w-md shadow">
+            <p class="text-gray-900 dark:text-white text-sm">${content}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${new Date().toLocaleTimeString()}</p>
+          </div>
+        `;
+      }
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Función para mostrar/ocultar indicador de escritura
+    function showTyping(show = true) {
+      if (show) {
+        typingIndicator.classList.remove('hidden');
+      } else {
+        typingIndicator.classList.add('hidden');
+      }
+    }
+
+    // Manejar envío del formulario
+    chatForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const message = messageInput.value.trim();
+      if (!message) return;
+
+      // Deshabilitar input y botón
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+      sendButton.textContent = 'Enviando...';
+
+      // Agregar mensaje del usuario
+      addMessage(message, true);
+      messageInput.value = '';
+
+      // Mostrar indicador de escritura
+      showTyping(true);
+
+      try {
+        // Enviar mensaje al chatbot
+        const response = await fetch(`http://localhost:8000/api/v1/chatbots/${chatbotId}/chat`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: message,
+            conversation_id: null // Para nueva conversación
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Simular delay de escritura
+          setTimeout(() => {
+            showTyping(false);
+            addMessage(data.response || 'Lo siento, no pude procesar tu mensaje.');
+          }, 1000);
+        } else {
+          showTyping(false);
+          const error = await response.json();
+          addMessage(`❌ Error: ${error.detail || 'No se pudo enviar el mensaje'}`, false);
+        }
+      } catch (error) {
+        showTyping(false);
+        addMessage(`❌ Error de conexión: ${error.message}`, false);
+      } finally {
+        // Rehabilitar input y botón
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        sendButton.textContent = 'Enviar';
+        messageInput.focus();
+      }
+    });
+
+    // Focus en el input al cargar
+    messageInput.focus();
+
+    // Enviar con Enter
+    messageInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit'));
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Animación para el indicador de escritura */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Scroll suave para el chat */
+  #chatMessages {
+    scroll-behavior: smooth;
+  }
+  
+  /* Estilos para mensajes */
+  #chatMessages > div {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
