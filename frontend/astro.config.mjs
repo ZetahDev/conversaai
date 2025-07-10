@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import node from '@astrojs/node';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,6 +22,14 @@ export default defineConfig({
     host: true,
   },
   vite: {
+    plugins: [
+      // Codecov plugin para bundle analysis
+      codecovVitePlugin({
+        enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+        bundleName: "conversaai-frontend",
+        uploadToken: process.env.CODECOV_TOKEN,
+      }),
+    ],
     define: {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     },

@@ -1,14 +1,14 @@
-name: 🚀 ConversaAI CI/CD Pipeline
+name: "🚀 ConversaAI CI/CD Pipeline"
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
-  PYTHON_VERSION: '3.11'
-  NODE_VERSION: '18'
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
 
 jobs:
   # ========================
@@ -17,7 +17,7 @@ jobs:
   backend-tests:
     name: 🐍 Backend Tests & Coverage
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -32,7 +32,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -53,7 +53,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
+          cache: "pip"
 
       - name: 📦 Install dependencies
         working-directory: ./backend
@@ -119,8 +119,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: './frontend/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "./frontend/package-lock.json"
 
       - name: 📦 Install dependencies
         working-directory: ./frontend
@@ -136,6 +136,8 @@ jobs:
 
       - name: 🏗️ Build project
         working-directory: ./frontend
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: npm run build
 
       - name: 🧪 Run tests (when available)
