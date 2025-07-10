@@ -1,6 +1,6 @@
 // Security Middleware for Astro
-import { defineMiddleware } from 'astro:middleware';
-import { config } from '~/lib/config';
+import type { MiddlewareHandler } from 'astro';
+import { config } from './lib/config.js';
 
 // Rate limiting store (in-memory for development, use Redis in production)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -124,7 +124,7 @@ function validateOrigin(request: Request): boolean {
   return allowedOrigins.includes(requestOrigin);
 }
 
-export const onRequest = defineMiddleware(async (context, next) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
   const { request, url } = context;
   const method = request.method;
   const pathname = url.pathname;
@@ -328,7 +328,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   return response;
-});
+};
 
 // Export utility functions for use in pages
 export { generateCSRFToken, validateCSRFToken, getClientIP, sanitizeInput };

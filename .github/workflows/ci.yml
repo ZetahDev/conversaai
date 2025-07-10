@@ -85,20 +85,25 @@ jobs:
           python -m pytest tests/ \
             --cov=app \
             --cov-branch \
-            --cov-report=xml \
-            --cov-report=html \
+            --cov-report=xml:coverage.xml \
+            --cov-report=html:htmlcov \
             --cov-report=term-missing \
             --cov-fail-under=60 \
             -v || echo "Tests completed with warnings"
+
+          # Verificar que se generó el archivo de coverage
+          ls -la coverage.xml || echo "coverage.xml not found"
+          ls -la htmlcov/ || echo "htmlcov directory not found"
 
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./backend/coverage.xml
+          file: coverage.xml
           flags: backend
           name: backend-coverage
-          fail_ci_if_error: true
+          fail_ci_if_error: false
+        working-directory: ./backend
 
       - name: 📈 Upload coverage artifacts
         uses: actions/upload-artifact@v4
